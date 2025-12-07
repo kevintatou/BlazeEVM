@@ -12,3 +12,4 @@ name = "blazeevm_core"
 path = "src/lib.rs"
 
 [dependencies]
+primitive-types = "0.14.0"
