@@ -2,5 +2,13 @@
 name = "blazeevm-core"
 version = "0.1.0"
 edition = "2021"
+description = "Core EVM execution and state logic for BlazeEVM"
+authors = ["BlazeEVM Contributors"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/kevintatou/BlazeEVM"
+
+[lib]
+name = "blazeevm_core"
+path = "src/lib.rs"
 
 [dependencies]

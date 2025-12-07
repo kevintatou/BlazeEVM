@@ -2,5 +2,13 @@
 name = "blazeevm-node"
 version = "0.1.0"
 edition = "2021"
+description = "BlazeEVM node: CLI and RPC server for local EVM development"
+authors = ["BlazeEVM Contributors"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/kevintatou/BlazeEVM"
+
+[[bin]]
+name = "blazeevm-node"
+path = "src/main.rs"
 
 [dependencies]
