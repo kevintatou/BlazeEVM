@@ -53,6 +53,7 @@ mod tests {
         let nonce = 5;
         let account = Account::new(balance, nonce);
 
+        assert_eq!(account.balance, U256::from(1000));
         assert_eq!(account.balance, balance);
         assert_eq!(account.nonce, nonce);
         assert!(account.storage.is_empty());
