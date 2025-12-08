@@ -61,26 +61,32 @@ mod tests {
 
     #[test]
     fn test_update_balance() {
-        let mut account = Account::default();
-        assert_eq!(account.balance, U256::zero());
+        // Create account with initial balance of 100
+        let mut account = Account::new(U256::from(100), 0);
+        assert_eq!(account.balance, U256::from(100));
 
+        // Update balance to 500
         account.balance = U256::from(500);
         assert_eq!(account.balance, U256::from(500));
 
+        // Update balance to 1000
         account.balance = U256::from(1000);
         assert_eq!(account.balance, U256::from(1000));
     }
 
     #[test]
     fn test_update_nonce() {
-        let mut account = Account::default();
-        assert_eq!(account.nonce, 0);
+        // Create account with initial nonce of 5
+        let mut account = Account::new(U256::zero(), 5);
+        assert_eq!(account.nonce, 5);
 
-        account.nonce = 1;
-        assert_eq!(account.nonce, 1);
+        // Update nonce to 10
+        account.nonce = 10;
+        assert_eq!(account.nonce, 10);
 
+        // Increment nonce
         account.nonce += 1;
-        assert_eq!(account.nonce, 2);
+        assert_eq!(account.nonce, 11);
     }
 
     #[test]
