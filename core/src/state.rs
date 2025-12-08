@@ -41,7 +41,7 @@ impl State {
     /// Increments the nonce of an account, creating the account if it doesn't exist
     pub fn increment_nonce(&mut self, address: &H160) {
         let account = self.get_or_create_account(address);
-        account.nonce += 1;
+        account.nonce = account.nonce.saturating_add(1);
     }
 }
 
@@ -127,5 +127,20 @@ mod tests {
         let account2 = state.get_account(&addr2).unwrap();
         assert_eq!(account2.balance, U256::from(200));
         assert_eq!(account2.nonce, 0);
+    }
+
+    #[test]
+    fn test_nonce_overflow_protection() {
+        let mut state = State::new();
+        let address = H160::from_low_u64_be(1);
+
+        // Set nonce to max value
+        let account = state.get_or_create_account(&address);
+        account.nonce = u64::MAX;
+
+        // Increment should saturate at max, not overflow
+        state.increment_nonce(&address);
+        let account = state.get_account(&address).unwrap();
+        assert_eq!(account.nonce, u64::MAX);
     }
 }
