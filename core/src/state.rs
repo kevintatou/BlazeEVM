@@ -1,6 +1,6 @@
+use crate::account::Account;
 use primitive_types::{H160, U256};
 use std::collections::HashMap;
-use crate::account::Account;
 
 /// Global state managing all accounts in the EVM
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -29,7 +29,7 @@ impl State {
 
     /// Gets an existing account or creates a new default account if it doesn't exist
     pub fn get_or_create_account(&mut self, address: &H160) -> &mut Account {
-        self.accounts.entry(*address).or_insert_with(Account::default)
+        self.accounts.entry(*address).or_default()
     }
 
     /// Sets the balance of an account, creating the account if it doesn't exist
