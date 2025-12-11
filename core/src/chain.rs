@@ -26,9 +26,9 @@ impl Chain {
         self.blocks.len()
     }
 
-    /// Checks if the chain is empty
-    pub fn is_empty(&self) -> bool {
-        self.blocks.is_empty()
+    /// Returns a reference to a block at the specified index
+    pub fn get_block(&self, index: usize) -> Option<&Block> {
+        self.blocks.get(index)
     }
 }
 
@@ -48,8 +48,9 @@ mod tests {
     fn test_new_chain_creates_genesis() {
         let chain = Chain::new();
         assert_eq!(chain.len(), 1);
-        assert_eq!(chain.blocks[0].header.number, 0);
-        assert_eq!(chain.blocks[0].header.parent_hash, H256::zero());
+        let genesis = chain.get_block(0).expect("Genesis block should exist");
+        assert_eq!(genesis.header.number, 0);
+        assert_eq!(genesis.header.parent_hash, H256::zero());
     }
 
     #[test]
@@ -76,13 +77,15 @@ mod tests {
         chain.append_block(block.clone());
         
         assert_eq!(chain.len(), 2);
-        assert_eq!(chain.blocks[1], block);
+        let appended_block = chain.get_block(1).expect("Block 1 should exist");
+        assert_eq!(appended_block, &block);
     }
 
     #[test]
     fn test_default_chain() {
         let chain = Chain::default();
         assert_eq!(chain.len(), 1);
-        assert_eq!(chain.blocks[0].header.number, 0);
+        let genesis = chain.get_block(0).expect("Genesis block should exist");
+        assert_eq!(genesis.header.number, 0);
     }
 }
