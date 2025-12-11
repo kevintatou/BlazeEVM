@@ -106,7 +106,12 @@ mod tests {
 
     #[test]
     fn test_instantiate_block() {
-        let header = Header::new(1, H256::from_low_u64_be(100), H256::from_low_u64_be(200), 1000);
+        let header = Header::new(
+            1,
+            H256::from_low_u64_be(100),
+            H256::from_low_u64_be(200),
+            1000,
+        );
         let block = Block::new(header.clone());
 
         assert_eq!(block.header.number, 1);
@@ -117,7 +122,12 @@ mod tests {
 
     #[test]
     fn test_block_with_header() {
-        let block = Block::with_header(5, H256::from_low_u64_be(50), H256::from_low_u64_be(75), 5000);
+        let block = Block::with_header(
+            5,
+            H256::from_low_u64_be(50),
+            H256::from_low_u64_be(75),
+            5000,
+        );
 
         assert_eq!(block.header.number, 5);
         assert_eq!(block.header.parent_hash, H256::from_low_u64_be(50));
@@ -135,9 +145,24 @@ mod tests {
 
     #[test]
     fn test_block_equality() {
-        let header1 = Header::new(1, H256::from_low_u64_be(10), H256::from_low_u64_be(20), 1000);
-        let header2 = Header::new(1, H256::from_low_u64_be(10), H256::from_low_u64_be(20), 1000);
-        let header3 = Header::new(2, H256::from_low_u64_be(10), H256::from_low_u64_be(20), 1000);
+        let header1 = Header::new(
+            1,
+            H256::from_low_u64_be(10),
+            H256::from_low_u64_be(20),
+            1000,
+        );
+        let header2 = Header::new(
+            1,
+            H256::from_low_u64_be(10),
+            H256::from_low_u64_be(20),
+            1000,
+        );
+        let header3 = Header::new(
+            2,
+            H256::from_low_u64_be(10),
+            H256::from_low_u64_be(20),
+            1000,
+        );
 
         let block1 = Block::new(header1);
         let block2 = Block::new(header2);
