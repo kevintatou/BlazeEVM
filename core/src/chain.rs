@@ -26,6 +26,11 @@ impl Chain {
         self.blocks.len()
     }
 
+    /// Checks if the chain is empty (always returns false as genesis is always present)
+    pub fn is_empty(&self) -> bool {
+        self.blocks.is_empty()
+    }
+
     /// Returns a reference to a block at the specified index
     pub fn get_block(&self, index: usize) -> Option<&Block> {
         self.blocks.get(index)
@@ -70,12 +75,12 @@ mod tests {
     #[test]
     fn test_append_block() {
         let mut chain = Chain::new();
-        
+
         let header = Header::new(1, H256::from_low_u64_be(100), H256::zero(), 5000);
         let block = Block::new(header);
-        
+
         chain.append_block(block.clone());
-        
+
         assert_eq!(chain.len(), 2);
         let appended_block = chain.get_block(1).expect("Block 1 should exist");
         assert_eq!(appended_block, &block);
