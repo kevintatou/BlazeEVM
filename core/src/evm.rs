@@ -10,6 +10,26 @@
 //! - Transaction execution using REVM's mainnet configuration
 //! - State persistence across multiple transaction executions
 //!
+//! # Analogy: EVM vs Web Server
+//!
+//! If you're familiar with web servers, here's how the EVM compares:
+//!
+//! | Web Server | EVM Wrapper | Description |
+//! |------------|-------------|-------------|
+//! | HTTP Server | `Evm` struct | The main server that handles requests |
+//! | Database (PostgreSQL, MySQL) | `InMemoryDB` | Stores persistent state between requests |
+//! | HTTP Request | Transaction (`execute_raw_tx`) | Incoming request to process |
+//! | Request Handler/Route | Smart Contract Code | Code that executes when called |
+//! | Session/Cookie | Account Balance & State | User-specific data that persists |
+//! | POST data/JSON body | Transaction `data` field | Input parameters sent with request |
+//! | Response body | Return value (output bytes) | Data returned after processing |
+//! | Database transaction | EVM transaction | Atomic unit of work that updates state |
+//! | Server restart with empty DB | `Evm::new()` | Fresh instance with no state |
+//! | Seed data/migrations | `set_balance()`, `set_code()` | Initialize state before handling requests |
+//!
+//! **Key Difference**: Unlike a web server that typically connects to an external database,
+//! the EVM keeps all state in memory (`InMemoryDB`) for fast, deterministic testing.
+//!
 //! # How it Works
 //!
 //! 1. **State Management**: Uses REVM's `InMemoryDB` to track all account states including:
