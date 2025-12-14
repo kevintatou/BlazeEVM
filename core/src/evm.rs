@@ -213,8 +213,12 @@ impl Evm {
     /// let mut evm = Evm::new();
     /// let addr = Address::with_last_byte(1);
     ///
-    /// // Give the account 1 ETH (1e18 wei)
-    /// evm.set_balance(addr, U256::from(1_000_000_000_000_000_000u64));
+    /// // Give the account 1 ETH (10^18 wei)
+    /// let one_eth = U256::from(10u64).pow(U256::from(18));
+    /// evm.set_balance(addr, one_eth);
+    ///
+    /// // Or use a smaller amount like 1000 wei
+    /// evm.set_balance(addr, U256::from(1000));
     /// ```
     pub fn set_balance(&mut self, address: Address, balance: U256) {
         let account = self.db.cache.accounts.entry(address).or_default();
