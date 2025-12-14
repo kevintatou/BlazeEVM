@@ -13,3 +13,4 @@ path = "src/lib.rs"
 
 [dependencies]
 primitive-types = "0.14.0"
+revm = "33.1.0"
