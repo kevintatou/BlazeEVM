@@ -111,12 +111,7 @@ mod tests {
 
         let result = evm.execute_raw_tx(caller, Some(contract_addr), vec![], U256::ZERO);
         
-        match &result {
-            Ok(output) => println!("Execution succeeded with output len: {}, {:?}", output.len(), output),
-            Err(e) => println!("Execution failed with error: {}", e),
-        }
-        
-        // Just verify execution succeeds (STOP returns empty output, which is valid)
+        // Verify execution succeeds (STOP returns empty output, which is valid)
         assert!(result.is_ok(), "Execution should succeed: {:?}", result);
     }
 
