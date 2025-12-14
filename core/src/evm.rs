@@ -187,7 +187,9 @@ impl Evm {
             .unwrap();
 
         // Execute the transaction and capture any errors
-        let result = evm.transact(tx).map_err(|e| format!("EVM error: {:?}", e))?;
+        let result = evm
+            .transact(tx)
+            .map_err(|e| format!("EVM error: {:?}", e))?;
 
         // Persist state changes: Update our database with the modified state
         // This ensures subsequent transactions see the effects of this one
@@ -262,14 +264,14 @@ impl Evm {
     pub fn set_code(&mut self, address: Address, code: Vec<u8>) {
         // Convert raw bytes to REVM bytecode format
         let bytecode = revm::bytecode::Bytecode::new_raw(Bytes::from(code));
-        
+
         // Compute the hash of the bytecode for storage lookup
         let code_hash = bytecode.hash_slow();
-        
+
         // Store the contract bytecode in the contracts cache
         // This is required for REVM to execute the code
         self.db.cache.contracts.insert(code_hash, bytecode.clone());
-        
+
         // Update the account info to reference this contract code
         let account = self.db.cache.accounts.entry(address).or_default();
         account.info.code = Some(bytecode);
@@ -316,7 +318,7 @@ mod tests {
     #[test]
     fn test_simple_execution() {
         let mut evm = Evm::new();
-        
+
         // Create a simple contract that halts immediately (STOP opcode)
         // This is the simplest possible contract to test execution
         let code = vec![0x00]; // STOP
@@ -329,7 +331,7 @@ mod tests {
         evm.set_balance(caller, U256::from(1_000_000)); // Sufficient balance for gas
 
         let result = evm.execute_raw_tx(caller, Some(contract_addr), vec![], U256::ZERO);
-        
+
         // Verify execution succeeds (STOP returns empty output, which is valid)
         assert!(result.is_ok(), "Execution should succeed: {:?}", result);
     }
