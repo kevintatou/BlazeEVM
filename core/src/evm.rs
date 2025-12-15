@@ -23,7 +23,7 @@
 //! | Session/Cookie | Account Balance & State | User-specific data that persists |
 //! | POST data/JSON body | Transaction `data` field | Input parameters sent with request |
 //! | Response body | Return value (output bytes) | Data returned after processing |
-//! | Database transaction | EVM transaction | Atomic unit of work that updates state |
+//! | BEGIN/COMMIT in SQL | State persistence after transaction | Changes are saved atomically after each call |
 //! | Server restart with empty DB | `Evm::new()` | Fresh instance with no state |
 //! | Seed data/migrations | `set_balance()`, `set_code()` | Initialize state before handling requests |
 //!
