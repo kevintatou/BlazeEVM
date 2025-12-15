@@ -48,7 +48,9 @@ impl Evm {
             .build()
             .unwrap();
 
-        let result = evm.transact(tx).map_err(|e| format!("EVM error: {:?}", e))?;
+        let result = evm
+            .transact(tx)
+            .map_err(|e| format!("EVM error: {:?}", e))?;
 
         // Update our database with the resulting state
         self.db = evm.ctx.db_ref().clone();
@@ -67,10 +69,10 @@ impl Evm {
     pub fn set_code(&mut self, address: Address, code: Vec<u8>) {
         let bytecode = revm::bytecode::Bytecode::new_raw(Bytes::from(code));
         let code_hash = bytecode.hash_slow();
-        
+
         // Store the contract in the contracts map
         self.db.cache.contracts.insert(code_hash, bytecode.clone());
-        
+
         // Update the account info
         let account = self.db.cache.accounts.entry(address).or_default();
         account.info.code = Some(bytecode);
@@ -97,7 +99,7 @@ mod tests {
     #[test]
     fn test_simple_execution() {
         let mut evm = Evm::new();
-        
+
         // Create a simpler contract that just returns empty (STOP opcode)
         // This is the simplest possible contract to test execution
         let code = vec![0x00]; // STOP
@@ -110,7 +112,7 @@ mod tests {
         evm.set_balance(caller, U256::from(1_000_000)); // More balance for gas
 
         let result = evm.execute_raw_tx(caller, Some(contract_addr), vec![], U256::ZERO);
-        
+
         // Verify execution succeeds (STOP returns empty output, which is valid)
         assert!(result.is_ok(), "Execution should succeed: {:?}", result);
     }
