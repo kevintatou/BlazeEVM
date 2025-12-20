@@ -1,17 +1,14 @@
 use tokio::net::TcpListener;
 use std::time::Duration;
+use blazeevm_node::server;
 
-/// Helper function to spawn a test server and return its address and handle
+/// Helper function to spawn a test server using production code and return its address and handle
 async fn spawn_test_server() -> (std::net::SocketAddr, tokio::task::JoinHandle<Result<(), std::io::Error>>) {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
     
     let server_handle = tokio::spawn(async move {
-        let app = axum::Router::new()
-            .route("/health", axum::routing::get(|| async {
-                axum::Json(serde_json::json!({"status": "ok"}))
-            }));
-        
+        let app = server::create_app();
         axum::serve(listener, app).await
     });
     

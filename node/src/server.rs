@@ -6,15 +6,18 @@ use crate::rpc;
 
 /// Starts the JSON-RPC server on the specified address
 pub async fn start(addr: SocketAddr) -> Result<(), Box<dyn std::error::Error>> {
-    let app = Router::new()
-        .merge(rpc::routes());
-
+    let app = create_app();
     let listener = TcpListener::bind(addr).await?;
     println!("Server listening on {}", addr);
     
     serve(listener, app).await?;
     
     Ok(())
+}
+
+/// Creates the application router with all routes
+pub fn create_app() -> Router {
+    Router::new().merge(rpc::routes())
 }
 
 #[cfg(test)]
@@ -28,7 +31,7 @@ mod tests {
         let addr = listener.local_addr().unwrap();
         
         let server_handle = tokio::spawn(async move {
-            let app = Router::new().merge(rpc::routes());
+            let app = create_app();
             serve(listener, app).await
         });
 

@@ -1,7 +1,6 @@
 // BlazeEVM Node Binary
 
-mod server;
-mod rpc;
+use blazeevm_node::server;
 
 #[tokio::main]
 async fn main() {

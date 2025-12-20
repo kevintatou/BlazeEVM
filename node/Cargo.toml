@@ -7,6 +7,10 @@ authors = ["BlazeEVM Contributors"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/kevintatou/BlazeEVM"
 
+[lib]
+name = "blazeevm_node"
+path = "src/lib.rs"
+
 [[bin]]
 name = "blazeevm-node"
 path = "src/main.rs"
