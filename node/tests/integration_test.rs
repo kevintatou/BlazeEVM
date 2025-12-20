@@ -1,15 +1,12 @@
 use tokio::net::TcpListener;
 use std::time::Duration;
 
-#[tokio::test]
-async fn test_server_boots() {
-    // Bind to an available port
+/// Helper function to spawn a test server and return its address and handle
+async fn spawn_test_server() -> (std::net::SocketAddr, tokio::task::JoinHandle<Result<(), std::io::Error>>) {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
     
-    // Spawn the server in a background task
     let server_handle = tokio::spawn(async move {
-        // Create a simple axum app to test server bootstrap
         let app = axum::Router::new()
             .route("/health", axum::routing::get(|| async {
                 axum::Json(serde_json::json!({"status": "ok"}))
@@ -20,6 +17,13 @@ async fn test_server_boots() {
     
     // Give the server time to start
     tokio::time::sleep(Duration::from_millis(100)).await;
+    
+    (addr, server_handle)
+}
+
+#[tokio::test]
+async fn test_server_boots() {
+    let (addr, server_handle) = spawn_test_server().await;
     
     // Test that the server is running by making a request
     let client = reqwest::Client::new();
@@ -40,22 +44,7 @@ async fn test_server_boots() {
 
 #[tokio::test]
 async fn test_health_endpoint_returns_ok() {
-    // Bind to an available port
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let addr = listener.local_addr().unwrap();
-    
-    // Spawn the server in a background task
-    let server_handle = tokio::spawn(async move {
-        let app = axum::Router::new()
-            .route("/health", axum::routing::get(|| async {
-                axum::Json(serde_json::json!({"status": "ok"}))
-            }));
-        
-        axum::serve(listener, app).await
-    });
-    
-    // Give the server time to start
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    let (addr, server_handle) = spawn_test_server().await;
     
     // Test the health endpoint
     let client = reqwest::Client::new();

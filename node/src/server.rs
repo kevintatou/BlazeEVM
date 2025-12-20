@@ -24,9 +24,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_server_starts() {
-        let addr: SocketAddr = "127.0.0.1:0".parse().unwrap();
-        let listener = TcpListener::bind(addr).await.unwrap();
-        let bound_addr = listener.local_addr().unwrap();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
         
         let server_handle = tokio::spawn(async move {
             let app = Router::new().merge(rpc::routes());
@@ -36,15 +35,15 @@ mod tests {
         // Give the server a moment to start
         tokio::time::sleep(Duration::from_millis(100)).await;
 
-        // Try to connect to the server
+        // Verify the server is running by connecting to it
         let connect_result = timeout(
             Duration::from_secs(1),
-            TcpListener::bind(bound_addr)
+            tokio::net::TcpStream::connect(addr)
         ).await;
 
-        // Should fail to bind because server is already listening
-        assert!(connect_result.is_ok());
-        assert!(connect_result.unwrap().is_err());
+        // Should successfully connect to the server
+        assert!(connect_result.is_ok(), "Server should accept connections");
+        assert!(connect_result.unwrap().is_ok(), "Connection to server should succeed");
 
         // Clean up
         server_handle.abort();
