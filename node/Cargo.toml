@@ -12,3 +12,11 @@ name = "blazeevm-node"
 path = "src/main.rs"
 
 [dependencies]
+axum = "0.8.1"
+tokio = { version = "1.42.0", features = ["full"] }
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.145"
+tower = "0.5.2"
+
+[dev-dependencies]
+reqwest = { version = "0.12.12", default-features = false, features = ["json", "rustls-tls"] }
