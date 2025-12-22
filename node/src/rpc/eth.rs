@@ -57,9 +57,12 @@ async fn json_rpc_handler(
             let response = JsonRpcResponse {
                 jsonrpc: "2.0".to_string(),
                 result: serde_json::json!(format!("0x{:x}", config.chain_id)),
-                id: request.id,
+                id: request.id.clone(),
             };
-            Json(serde_json::to_value(response).unwrap())
+            match serde_json::to_value(response) {
+                Ok(value) => Json(value),
+                Err(_) => create_internal_error(request.id),
+            }
         }
         _ => {
             let error_response = JsonRpcError {
@@ -68,11 +71,26 @@ async fn json_rpc_handler(
                     code: -32601,
                     message: "Method not found".to_string(),
                 },
-                id: request.id,
+                id: request.id.clone(),
             };
-            Json(serde_json::to_value(error_response).unwrap())
+            match serde_json::to_value(error_response) {
+                Ok(value) => Json(value),
+                Err(_) => create_internal_error(request.id),
+            }
         }
     }
+}
+
+/// Creates an internal error response
+fn create_internal_error(id: serde_json::Value) -> Json<serde_json::Value> {
+    Json(serde_json::json!({
+        "jsonrpc": "2.0",
+        "error": {
+            "code": -32603,
+            "message": "Internal error"
+        },
+        "id": id
+    }))
 }
 
 /// Creates the Ethereum RPC endpoint routes
