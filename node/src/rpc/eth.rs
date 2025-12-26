@@ -15,45 +15,37 @@ pub struct JsonRpcRequest {
     pub id: serde_json::Value,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct JsonRpcResponse {
-    pub jsonrpc: String,
-    pub result: serde_json::Value,
-    pub id: serde_json::Value,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct JsonRpcError {
-    pub jsonrpc: String,
-    pub error: ErrorDetail,
-    pub id: serde_json::Value,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ErrorDetail {
-    pub code: i32,
-    pub message: String,
-}
-
-/// Handler for eth_blockNumber RPC method
-async fn eth_block_number(
+/// Handler for eth RPC methods
+async fn eth_handler(
     State(chain): State<AppState>,
     Json(request): Json<JsonRpcRequest>,
-) -> Json<JsonRpcResponse> {
-    let chain = chain.read().await;
-    let block_number = chain.block_number();
+) -> Json<serde_json::Value> {
+    match request.method.as_str() {
+        "eth_blockNumber" => {
+            let chain = chain.read().await;
+            let block_number = chain.block_number();
 
-    Json(JsonRpcResponse {
-        jsonrpc: "2.0".to_string(),
-        result: serde_json::json!(format!("0x{:x}", block_number)),
-        id: request.id,
-    })
+            Json(serde_json::json!({
+                "jsonrpc": "2.0",
+                "result": format!("0x{:x}", block_number),
+                "id": request.id
+            }))
+        }
+        _ => Json(serde_json::json!({
+            "jsonrpc": "2.0",
+            "error": {
+                "code": -32601,
+                "message": format!("Method not found: {}", request.method)
+            },
+            "id": request.id
+        })),
+    }
 }
 
 /// Creates the eth RPC endpoint routes
 pub fn routes(chain: AppState) -> Router {
     Router::new()
-        .route("/", post(eth_block_number))
+        .route("/", post(eth_handler))
         .with_state(chain)
 }
 
@@ -93,10 +85,10 @@ mod tests {
         let body = axum::body::to_bytes(response.into_body(), usize::MAX)
             .await
             .unwrap();
-        let json_response: JsonRpcResponse = serde_json::from_slice(&body).unwrap();
-        assert_eq!(json_response.jsonrpc, "2.0");
-        assert_eq!(json_response.result, "0x0");
-        assert_eq!(json_response.id, 1);
+        let json_response: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json_response["jsonrpc"], "2.0");
+        assert_eq!(json_response["result"], "0x0");
+        assert_eq!(json_response["id"], 1);
     }
 
     #[tokio::test]
@@ -137,9 +129,46 @@ mod tests {
         let body = axum::body::to_bytes(response.into_body(), usize::MAX)
             .await
             .unwrap();
-        let json_response: JsonRpcResponse = serde_json::from_slice(&body).unwrap();
-        assert_eq!(json_response.jsonrpc, "2.0");
-        assert_eq!(json_response.result, "0x1");
-        assert_eq!(json_response.id, 42);
+        let json_response: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json_response["jsonrpc"], "2.0");
+        assert_eq!(json_response["result"], "0x1");
+        assert_eq!(json_response["id"], 42);
+    }
+
+    #[tokio::test]
+    async fn test_unsupported_method() {
+        let chain = Arc::new(RwLock::new(Chain::new()));
+        let app = routes(chain);
+
+        let request_body = serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "eth_unsupportedMethod",
+            "params": [],
+            "id": 1
+        });
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&request_body).unwrap()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json_response: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json_response["jsonrpc"], "2.0");
+        assert!(json_response["error"].is_object());
+        assert_eq!(json_response["error"]["code"], -32601);
+        assert!(json_response["error"]["message"].as_str().unwrap().contains("Method not found"));
     }
 }
+
