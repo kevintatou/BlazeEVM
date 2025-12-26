@@ -1,7 +1,7 @@
 use axum::Router;
 
-mod health;
 pub mod eth;
+mod health;
 
 /// Creates and returns the router with all RPC endpoints
 pub fn routes(chain: eth::AppState) -> Router {

@@ -103,7 +103,7 @@ async fn test_eth_block_number_endpoint() {
         .json()
         .await
         .expect("Failed to parse JSON response");
-    
+
     assert_eq!(
         body["jsonrpc"], "2.0",
         "Response should have jsonrpc version 2.0"
@@ -120,4 +120,3 @@ async fn test_eth_block_number_endpoint() {
     // Clean up
     server_handle.abort();
 }
-

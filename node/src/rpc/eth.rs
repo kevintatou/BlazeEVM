@@ -168,7 +168,9 @@ mod tests {
         assert_eq!(json_response["jsonrpc"], "2.0");
         assert!(json_response["error"].is_object());
         assert_eq!(json_response["error"]["code"], -32601);
-        assert!(json_response["error"]["message"].as_str().unwrap().contains("Method not found"));
+        assert!(json_response["error"]["message"]
+            .as_str()
+            .unwrap()
+            .contains("Method not found"));
     }
 }
-
