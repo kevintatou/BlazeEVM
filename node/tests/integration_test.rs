@@ -72,3 +72,52 @@ async fn test_health_endpoint_returns_ok() {
     // Clean up
     server_handle.abort();
 }
+
+#[tokio::test]
+async fn test_eth_block_number_endpoint() {
+    let (addr, server_handle) = spawn_test_server().await;
+
+    // Test the eth_blockNumber endpoint
+    let client = reqwest::Client::new();
+    let request_body = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "eth_blockNumber",
+        "params": [],
+        "id": 1
+    });
+
+    let response = client
+        .post(format!("http://{}/eth", addr))
+        .json(&request_body)
+        .send()
+        .await
+        .expect("Failed to send request to eth_blockNumber endpoint");
+
+    assert_eq!(
+        response.status(),
+        200,
+        "eth_blockNumber endpoint should return 200 OK"
+    );
+
+    let body: serde_json::Value = response
+        .json()
+        .await
+        .expect("Failed to parse JSON response");
+    
+    assert_eq!(
+        body["jsonrpc"], "2.0",
+        "Response should have jsonrpc version 2.0"
+    );
+    assert_eq!(
+        body["result"], "0x0",
+        "Genesis block should have block number 0x0"
+    );
+    assert_eq!(
+        body["id"], 1,
+        "Response should have the same id as the request"
+    );
+
+    // Clean up
+    server_handle.abort();
+}
+

@@ -1,6 +1,9 @@
 use axum::{serve, Router};
+use blazeevm_core::chain::Chain;
 use std::net::SocketAddr;
+use std::sync::Arc;
 use tokio::net::TcpListener;
+use tokio::sync::RwLock;
 
 use crate::rpc;
 
@@ -17,7 +20,8 @@ pub async fn start(addr: SocketAddr) -> Result<(), Box<dyn std::error::Error>> {
 
 /// Creates the application router with all routes
 pub fn create_app() -> Router {
-    Router::new().merge(rpc::routes())
+    let chain = Arc::new(RwLock::new(Chain::new()));
+    Router::new().merge(rpc::routes(chain))
 }
 
 #[cfg(test)]
