@@ -137,7 +137,7 @@ mod tests {
             .await
             .unwrap();
         let json_response: JsonRpcResponse = serde_json::from_slice(&body).unwrap();
-        
+
         assert_eq!(json_response.jsonrpc, "2.0");
         assert_eq!(json_response.result, "0x539"); // 1337 in hex
         assert_eq!(json_response.id, 1);
@@ -173,7 +173,7 @@ mod tests {
             .await
             .unwrap();
         let json_response: JsonRpcResponse = serde_json::from_slice(&body).unwrap();
-        
+
         assert_eq!(json_response.jsonrpc, "2.0");
         assert_eq!(json_response.result, "0x1"); // 1 in hex
         assert_eq!(json_response.id, 42);
@@ -209,7 +209,7 @@ mod tests {
             .await
             .unwrap();
         let json_response: JsonRpcError = serde_json::from_slice(&body).unwrap();
-        
+
         assert_eq!(json_response.jsonrpc, "2.0");
         assert_eq!(json_response.error.code, -32601);
         assert_eq!(json_response.error.message, "Method not found");

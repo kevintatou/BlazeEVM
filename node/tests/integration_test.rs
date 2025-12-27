@@ -79,7 +79,7 @@ async fn test_eth_chain_id_endpoint() {
 
     // Test the eth_chainId JSON-RPC endpoint
     let client = reqwest::Client::new();
-    
+
     let request_body = serde_json::json!({
         "jsonrpc": "2.0",
         "method": "eth_chainId",
@@ -115,4 +115,3 @@ async fn test_eth_chain_id_endpoint() {
     // Clean up
     server_handle.abort();
 }
-
