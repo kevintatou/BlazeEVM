@@ -8,7 +8,9 @@ use std::sync::Arc;
 pub struct EthConfig {
     /// Chain ID (default: 1337 for local development)
     pub chain_id: u64,
-    /// The blockchain instance
+    /// The blockchain instance (read-only for RPC queries)
+    /// Note: Currently cloned with Arc<EthConfig>, so each handler gets a snapshot.
+    /// For dynamic block updates, consider wrapping in Arc<RwLock<Chain>>.
     pub chain: Chain,
 }
 

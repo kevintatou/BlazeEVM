@@ -40,8 +40,9 @@ impl Chain {
     pub fn get_block_number(&self) -> u64 {
         self.blocks
             .last()
-            .map(|block| block.header.number)
-            .unwrap_or(0)
+            .expect("Chain should always contain at least the genesis block")
+            .header
+            .number
     }
 }
 
