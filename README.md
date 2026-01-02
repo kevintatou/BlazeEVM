@@ -51,6 +51,8 @@ See [ROADMAP.md](./ROADMAP.md) for the complete development roadmap with 11 phas
 - State persistence and network forking
 - Multi-chain and cross-chain simulation (future)
 
+For a quick overview, see [ROADMAP_SUMMARY.md](./ROADMAP_SUMMARY.md).
+
 For creating GitHub issues from the roadmap, see [docs/creating_issues_from_roadmap.md](./docs/creating_issues_from_roadmap.md).
 
 ## How we work
@@ -60,6 +62,7 @@ For creating GitHub issues from the roadmap, see [docs/creating_issues_from_road
 
 ## Documentation
 
+- [ROADMAP_SUMMARY.md](./ROADMAP_SUMMARY.md) - Quick overview of the roadmap
+- [ROADMAP.md](./ROADMAP.md) - Complete development roadmap with 44 micro-issues
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture and design principles
-- [ROADMAP.md](./ROADMAP.md) - Development roadmap and micro-issues
 - [docs/creating_issues_from_roadmap.md](./docs/creating_issues_from_roadmap.md) - Guide for creating issues
