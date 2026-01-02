@@ -42,7 +42,24 @@ Run only node tests:
 cargo test --package blazeevm-node
 ```
 
+## Development Roadmap
+
+See [ROADMAP.md](./ROADMAP.md) for the complete development roadmap with 11 phases and 44+ micro-issues covering:
+- Essential JSON-RPC methods
+- Transaction handling and mining
+- Development tools (snapshots, time manipulation)
+- State persistence and network forking
+- Multi-chain and cross-chain simulation (future)
+
+For creating GitHub issues from the roadmap, see [docs/creating_issues_from_roadmap.md](./docs/creating_issues_from_roadmap.md).
+
 ## How we work
 - Small, atomic issues using the `.github/ISSUE_TEMPLATE/feature.md`
 - Keep scope tight; no extra deps or refactors without an issue
 - Prioritize determinism and simplicity in early milestones
+
+## Documentation
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture and design principles
+- [ROADMAP.md](./ROADMAP.md) - Development roadmap and micro-issues
+- [docs/creating_issues_from_roadmap.md](./docs/creating_issues_from_roadmap.md) - Guide for creating issues
