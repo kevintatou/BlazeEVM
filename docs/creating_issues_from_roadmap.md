@@ -135,7 +135,9 @@ Implement the `eth_blockNumber` method which returns the number of the most rece
 Some issues depend on others being completed first. The roadmap generally orders issues to minimize dependencies, but here are key dependency chains:
 
 ### Phase 1 Dependencies
-- Issues 1.2 and 1.3 should wait for Issue 1.4 (Shared State Management) OR can be implemented with a simpler state approach first
+- **Recommended approach**: Implement Issue 1.4 (Shared State Management) first to establish proper state handling architecture
+- **Alternative**: Issues 1.2 and 1.3 can be implemented with a simpler temporary state approach, then refactored when 1.4 is completed
+- **Best practice**: Follow the recommended approach to avoid refactoring work
 
 ### Phase 2 Dependencies
 - Issue 2.3 (`eth_sendRawTransaction`) depends on:

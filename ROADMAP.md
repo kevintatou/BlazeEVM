@@ -100,12 +100,12 @@ Implement the `eth_getTransactionCount` method which returns the number of trans
 **Summary:** Create shared state container for RPC handlers to access chain and state.
 
 **Description:**
-Before implementing transaction submission and more complex methods, we need a shared state structure that RPC handlers can access. This will hold the Chain and State, wrapped in Arc<RwLock<>> for thread-safe concurrent access.
+Before implementing transaction submission and more complex methods, we need a shared state structure that RPC handlers can access. This will hold the Chain and State, wrapped in `Arc<RwLock<T>>` for thread-safe concurrent access (where T would be the actual Chain and State types).
 
 **Acceptance Criteria:**
 - [ ] Create `NodeState` struct in `node/src/state.rs`
 - [ ] Wrap Chain and State from core
-- [ ] Use Arc<RwLock<>> for thread-safe access
+- [ ] Use `Arc<RwLock<T>>` for thread-safe access
 - [ ] Pass NodeState to RPC handlers via Axum's State extractor
 - [ ] Update existing handlers to use NodeState
 
@@ -827,7 +827,7 @@ Add functionality to automatically persist state to disk periodically and on shu
 **Summary:** Add ability to connect to external Ethereum RPC provider.
 
 **Description:**
-Implement RPC client that can connect to external Ethereum nodes (e.g., Infura, Alchemy) to fetch state and blocks for forking.
+Implement RPC client that can connect to any JSON-RPC compatible Ethereum provider (such as public nodes, Infura, Alchemy, or self-hosted nodes) to fetch state and blocks for forking.
 
 **Acceptance Criteria:**
 - [ ] Add HTTP client dependency (e.g., reqwest)
