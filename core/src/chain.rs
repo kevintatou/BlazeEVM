@@ -35,6 +35,14 @@ impl Chain {
     pub fn get_block(&self, index: usize) -> Option<&Block> {
         self.blocks.get(index)
     }
+
+    /// Returns the block number of the latest block in the chain
+    pub fn get_block_number(&self) -> u64 {
+        self.blocks
+            .last()
+            .map(|block| block.header.number)
+            .unwrap_or(0)
+    }
 }
 
 impl Default for Chain {
@@ -92,5 +100,22 @@ mod tests {
         assert_eq!(chain.len(), 1);
         let genesis = chain.get_block(0).expect("Genesis block should exist");
         assert_eq!(genesis.header.number, 0);
+    }
+
+    #[test]
+    fn test_get_block_number() {
+        let mut chain = Chain::new();
+        // Genesis block has number 0
+        assert_eq!(chain.get_block_number(), 0);
+
+        // Add block 1
+        let block1 = Block::with_header(1, H256::from_low_u64_be(1), H256::zero(), 1000);
+        chain.append_block(block1);
+        assert_eq!(chain.get_block_number(), 1);
+
+        // Add block 2
+        let block2 = Block::with_header(2, H256::from_low_u64_be(2), H256::zero(), 2000);
+        chain.append_block(block2);
+        assert_eq!(chain.get_block_number(), 2);
     }
 }

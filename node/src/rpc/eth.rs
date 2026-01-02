@@ -1,4 +1,5 @@
 use axum::{extract::State, routing::post, Json, Router};
+use blazeevm_core::chain::Chain;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -7,11 +8,16 @@ use std::sync::Arc;
 pub struct EthConfig {
     /// Chain ID (default: 1337 for local development)
     pub chain_id: u64,
+    /// The blockchain instance
+    pub chain: Chain,
 }
 
 impl Default for EthConfig {
     fn default() -> Self {
-        Self { chain_id: 1337 }
+        Self {
+            chain_id: 1337,
+            chain: Chain::default(),
+        }
     }
 }
 
@@ -57,6 +63,18 @@ async fn json_rpc_handler(
             let response = JsonRpcResponse {
                 jsonrpc: "2.0".to_string(),
                 result: serde_json::json!(format!("0x{:x}", config.chain_id)),
+                id: request.id.clone(),
+            };
+            match serde_json::to_value(response) {
+                Ok(value) => Json(value),
+                Err(_) => create_internal_error(request.id),
+            }
+        }
+        "eth_blockNumber" => {
+            let block_number = config.chain.get_block_number();
+            let response = JsonRpcResponse {
+                jsonrpc: "2.0".to_string(),
+                result: serde_json::json!(format!("0x{:x}", block_number)),
                 id: request.id.clone(),
             };
             match serde_json::to_value(response) {
@@ -145,7 +163,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_eth_chain_id_custom_config() {
-        let config = Arc::new(EthConfig { chain_id: 1 });
+        let config = Arc::new(EthConfig {
+            chain_id: 1,
+            chain: Chain::default(),
+        });
         let app = routes(config);
 
         let request_body = serde_json::json!({
@@ -213,5 +234,91 @@ mod tests {
         assert_eq!(json_response.jsonrpc, "2.0");
         assert_eq!(json_response.error.code, -32601);
         assert_eq!(json_response.error.message, "Method not found");
+    }
+
+    #[tokio::test]
+    async fn test_eth_block_number() {
+        let config = Arc::new(EthConfig::default());
+        let app = routes(config);
+
+        let request_body = serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "eth_blockNumber",
+            "params": [],
+            "id": 1
+        });
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&request_body).unwrap()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json_response: JsonRpcResponse = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(json_response.jsonrpc, "2.0");
+        assert_eq!(json_response.result, "0x0"); // Genesis block has number 0
+        assert_eq!(json_response.id, 1);
+    }
+
+    #[tokio::test]
+    async fn test_eth_block_number_with_blocks() {
+        use blazeevm_core::block::Block;
+        use primitive_types::H256;
+
+        let mut chain = Chain::default();
+        // Add block 1
+        let block1 = Block::with_header(1, H256::from_low_u64_be(1), H256::zero(), 1000);
+        chain.append_block(block1);
+        // Add block 2
+        let block2 = Block::with_header(2, H256::from_low_u64_be(2), H256::zero(), 2000);
+        chain.append_block(block2);
+
+        let config = Arc::new(EthConfig {
+            chain_id: 1337,
+            chain,
+        });
+        let app = routes(config);
+
+        let request_body = serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "eth_blockNumber",
+            "params": [],
+            "id": 1
+        });
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&request_body).unwrap()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json_response: JsonRpcResponse = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(json_response.jsonrpc, "2.0");
+        assert_eq!(json_response.result, "0x2"); // Latest block is block 2
+        assert_eq!(json_response.id, 1);
     }
 }
