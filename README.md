@@ -5,7 +5,7 @@ Local-first EVM devnode and simulator. Fast, deterministic, and designed for cle
 ## What we're building
 - Minimal Rust workspace with `core` (execution/state) and `node` (RPC/CLI)
 - REVM-backed execution wrapper
-- JSON-RPC basics: health, `eth_chainId`, `eth_blockNumber`
+- JSON-RPC basics: health, `eth_chainId`
 - Extensible foundation for future cross-chain simulation
 
 ## Usage
@@ -44,6 +44,8 @@ cargo test --package blazeevm-node
 
 ## Development Roadmap
 
+**Quick Start:** See [FEATURES_AT_A_GLANCE.md](./FEATURES_AT_A_GLANCE.md) for a one-liner summary of each feature and the overall goals.
+
 See [ROADMAP.md](./ROADMAP.md) for the complete development roadmap with 11 phases and 44+ micro-issues covering:
 - Essential JSON-RPC methods
 - Transaction handling and mining
@@ -51,7 +53,7 @@ See [ROADMAP.md](./ROADMAP.md) for the complete development roadmap with 11 phas
 - State persistence and network forking
 - Multi-chain and cross-chain simulation (future)
 
-For a quick overview, see [ROADMAP_SUMMARY.md](./ROADMAP_SUMMARY.md).
+For a visual overview, see [ROADMAP_SUMMARY.md](./ROADMAP_SUMMARY.md).
 
 For creating GitHub issues from the roadmap, see [docs/creating_issues_from_roadmap.md](./docs/creating_issues_from_roadmap.md).
 
@@ -62,7 +64,8 @@ For creating GitHub issues from the roadmap, see [docs/creating_issues_from_road
 
 ## Documentation
 
-- [ROADMAP_SUMMARY.md](./ROADMAP_SUMMARY.md) - Quick overview of the roadmap
-- [ROADMAP.md](./ROADMAP.md) - Complete development roadmap with 44 micro-issues
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture and design principles
-- [docs/creating_issues_from_roadmap.md](./docs/creating_issues_from_roadmap.md) - Guide for creating issues
+- **[FEATURES_AT_A_GLANCE.md](./FEATURES_AT_A_GLANCE.md)** - One-liner summary of each feature with overall goals
+- **[ROADMAP_SUMMARY.md](./ROADMAP_SUMMARY.md)** - Quick overview of the roadmap
+- **[ROADMAP.md](./ROADMAP.md)** - Complete development roadmap with 44 micro-issues
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture and design principles
+- **[docs/creating_issues_from_roadmap.md](./docs/creating_issues_from_roadmap.md)** - Guide for creating issues
